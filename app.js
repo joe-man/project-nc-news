@@ -1,15 +1,11 @@
 const express = require("express")
 const { getTopics } = require("./controllers/topics.controllers")
+const { getEndpoints } = require("./controllers/api.controllers")
 
 const app = express()
 
+app.get("/api", getEndpoints)
 app.get("/api/topics", getTopics)
-
-// app.use((err, req, res, next) => {
-//     if (err.status === 404) {
-//         res.status(404).send({msg: "Not Found"})
-//     }
-// })
 
 app.use((err, req, res, next) => {
     console.log(err)

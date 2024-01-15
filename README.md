@@ -1,11 +1,13 @@
 # Northcoders News API
 
-Create the following environment variables for the code to run:
+run command: npm i dotenv
 
-./.env.test
+Create the following files and the data within the files:
 
-PGDATABASE = nc_news_test;
+./.env.test -> PGDATABASE = nc_news_test;
 
-./.env.dev
+./.env.dev -> PGDATABASE = nc_news;
 
-PGDATABASE = nc_news;
+./.gitignore -> .env.*
+
+

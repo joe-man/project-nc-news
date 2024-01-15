@@ -35,17 +35,21 @@ describe("GET", () => {
             })
         })
     })
-    // describe("/api", () => {
-    //     test("200 - returns information on all endpoints", () => {
-    //         return request(app)
-    //         .get("/api")
-    //         .expect(200)
-    //         .then(({body: object}) => {
-    //             for (let key in object) {
-    //                 const innerObject = object[key]
-    //                 expect(innerObject)
-    //             }
-    //         })
-    //     })
-    // })
+    describe("/api", () => {
+        test("200 - returns correct an object with nested objects which have 4 correct properties with the correct datatype", () => {
+            return request(app)
+            .get("/api")
+            .expect(200)
+            .then(({body: object}) => {
+                for (let key in object) {
+                    const innerObject = object[key]
+                    expect(Object.keys(innerObject).length).toBe(4)
+                    expect(typeof innerObject.description).toBe("string")
+                    expect(Array.isArray(innerObject.queries)).toBe(true)
+                    expect(typeof innerObject.formatRequestBody).toBe("string")
+                    expect(typeof innerObject.exampleResponse).toBe("object")
+                }
+            })
+        })
+    })
 })

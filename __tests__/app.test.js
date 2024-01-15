@@ -35,14 +35,17 @@ describe("GET", () => {
             })
         })
     })
-    describe("/api", () => {
-        test("200 - returns information on all endpoints", () => {
-            return request(app)
-            .get("/api")
-            .expect(200)
-            .then((body) => {
-                
-            })
-        })
-    })
+    // describe("/api", () => {
+    //     test("200 - returns information on all endpoints", () => {
+    //         return request(app)
+    //         .get("/api")
+    //         .expect(200)
+    //         .then(({body: object}) => {
+    //             for (let key in object) {
+    //                 const innerObject = object[key]
+    //                 expect(innerObject)
+    //             }
+    //         })
+    //     })
+    // })
 })

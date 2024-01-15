@@ -1,13 +1,14 @@
 const express = require("express")
 const { getTopics } = require("./controllers/topics.controllers")
 const { getEndpoints } = require("./controllers/api.controllers")
-const { getArticleByArticleID } = require("./controllers/articles.controllers")
+const { getArticleByArticleID, getArticles } = require("./controllers/articles.controllers")
 
 const app = express()
 
 app.get("/api", getEndpoints)
 app.get("/api/topics", getTopics)
-app.get("/api/article/:article_id", getArticleByArticleID)
+app.get("/api/articles/:article_id", getArticleByArticleID)
+app.get("/api/articles", getArticles)
 
 app.use((err, req, res, next) => {
     if (err.status === 404) {
@@ -17,7 +18,7 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
-        res.status(400).send({ msg: "Invalid article ID"})
+        res.status(400).send({ msg: "Invalid datatype of input"})
     } else next(err)
 })
 

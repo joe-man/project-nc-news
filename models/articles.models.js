@@ -1,6 +1,6 @@
 const db = require("../db/connection.js")
 
-exports.selectArticle = (article_id) => {
+exports.selectArticleByID = (article_id) => {
     return db.query(`
     SELECT * FROM articles
     WHERE article_id = $1
@@ -13,4 +13,11 @@ exports.selectArticle = (article_id) => {
         }
         return res
     })
+}
+
+exports.selectArticles = () => {
+    return db.query(`
+    SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles
+    ORDER BY created_at desc
+    `)
 }

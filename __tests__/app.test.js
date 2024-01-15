@@ -3,6 +3,7 @@ const request = require("supertest")
 const app = require("../app.js")
 const seed = require("../db/seeds/seed.js")
 const db = require("../db/connection.js")
+const toBeSorted = require("jest-sorted")
 
 afterAll(()=>{
     return db.end();
@@ -55,7 +56,7 @@ describe("GET", () => {
     describe("/api/article/:article_id", () => {
         test("200 - returns single article by article id", () => {
             return request(app)
-            .get("/api/article/1")
+            .get("/api/articles/1")
             .expect(200)
             .then(({body: {article}}) => {
                 expect(Object.keys(article).length).toBe(8)
@@ -71,7 +72,7 @@ describe("GET", () => {
         })
         test("404 - for valid but non existent article ID", () => {
             return request(app)
-            .get("/api/article/999")
+            .get("/api/articles/999")
             .expect(404)
             .then(({body: {msg}}) => {
                expect(msg).toBe("Not Found")
@@ -79,10 +80,31 @@ describe("GET", () => {
         })
         test("404 - for invalid article ID", () => {
             return request(app)
-            .get("/api/article/dragons")
+            .get("/api/articles/dragons")
             .expect(400)
             .then(({body: {msg}}) => {
-               expect(msg).toBe("Invalid article ID")
+               expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+    })
+    describe("/api/article", () => {
+        test("200 - returns all articles with correct number of columns and rows and datatypes in descending order", () => {
+            return request(app)
+            .get("/api/articles")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                articles.forEach(article => {
+                    expect(Object.keys(article).length).toBe(7)
+                    expect(typeof article.article_id).toBe("number")
+                    expect(typeof article.title).toBe("string")
+                    expect(typeof article.topic).toBe("string")
+                    expect(typeof article.author).toBe("string")
+                    expect(typeof article.created_at).toBe("string")
+                    expect(typeof article.votes).toBe("number")
+                    expect(typeof article.article_img_url).toBe("string")
+                    expect(article.hasOwnProperty("body")).toBe(false)
+                    expect(articles).toBeSortedBy("created_at", {descending: true})
+                })
             })
         })
     })

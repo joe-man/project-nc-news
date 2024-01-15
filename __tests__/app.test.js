@@ -53,7 +53,7 @@ describe("GET", () => {
             })
         })
     })
-    describe("/api/article/:article_id", () => {
+    describe("/api/articles/:article_id", () => {
         test("200 - returns single article by article id", () => {
             return request(app)
             .get("/api/articles/1")
@@ -87,12 +87,13 @@ describe("GET", () => {
             })
         })
     })
-    describe("/api/article", () => {
+    describe("/api/articles", () => {
         test("200 - returns all articles with correct number of columns and rows and datatypes in descending order", () => {
             return request(app)
             .get("/api/articles")
             .expect(200)
             .then(({body: {articles}}) => {
+                expect(articles.length).toBe(13)
                 expect(articles).toBeSortedBy("created_at", {descending: true})
                 articles.forEach(article => {
                     expect(Object.keys(article).length).toBe(7)
@@ -115,6 +116,7 @@ describe("GET", () => {
             .expect(200)
             .then(({body: {comments}}) => {
                 expect(comments).toBeSortedBy("created_at", {descending: true})
+                expect(comments.length).toBe(11)
                 comments.forEach(comment => {
                     expect(Object.keys(comment).length).toBe(6)
                     expect(typeof comment.comment_id).toBe("number")

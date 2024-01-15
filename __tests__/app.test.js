@@ -93,6 +93,7 @@ describe("GET", () => {
             .get("/api/articles")
             .expect(200)
             .then(({body: {articles}}) => {
+                expect(articles).toBeSortedBy("created_at", {descending: true})
                 articles.forEach(article => {
                     expect(Object.keys(article).length).toBe(7)
                     expect(typeof article.article_id).toBe("number")
@@ -103,8 +104,43 @@ describe("GET", () => {
                     expect(typeof article.votes).toBe("number")
                     expect(typeof article.article_img_url).toBe("string")
                     expect(article.hasOwnProperty("body")).toBe(false)
-                    expect(articles).toBeSortedBy("created_at", {descending: true})
                 })
+            })
+        })
+    })
+    describe("/api/article/:article_id/comments", () => {
+        test("200 - returns all comments for an article", () => {
+            return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({body: {comments}}) => {
+                expect(comments).toBeSortedBy("created_at", {descending: true})
+                comments.forEach(comment => {
+                    expect(Object.keys(comment).length).toBe(6)
+                    expect(typeof comment.comment_id).toBe("number")
+                    expect(typeof comment.votes).toBe("number")
+                    expect(typeof comment.created_at).toBe("string")
+                    expect(typeof comment.author).toBe("string")
+                    expect(typeof comment.created_at).toBe("string")
+                    expect(typeof comment.body).toBe("string")
+                    expect(typeof comment.article_id).toBe("number")
+                })
+            })
+        })
+        test("404 - when provided a non existent article ID", () => {
+            return request(app)
+            .get("/api/articles/999/comments")
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Not Found")
+            })
+        })
+        test("400 - when provided an invalid article ID", () => {
+            return request(app)
+            .get("/api/articles/dragons/comments")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype of input")
             })
         })
     })

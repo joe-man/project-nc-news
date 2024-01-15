@@ -58,6 +58,7 @@ describe("GET", () => {
             .get("/api/article/1")
             .expect(200)
             .then(({body: {article}}) => {
+                expect(Object.keys(article).length).toBe(8)
                 expect(article.article_id).toBe(1)
                 expect(article.title).toBe("Living in the shadow of a great man")
                 expect(article.topic).toBe("mitch")

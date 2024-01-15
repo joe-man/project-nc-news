@@ -35,4 +35,14 @@ describe("GET", () => {
             })
         })
     })
+    describe("/api", () => {
+        test("200 - returns information on all endpoints", () => {
+            return request(app)
+            .get("/api")
+            .expect(200)
+            .then((body) => {
+                
+            })
+        })
+    })
 })

@@ -1,4 +1,5 @@
 const db = require("../db/connection.js")
+const format = require("pg-format")
 
 exports.selectCommentsByArticleID = (article_id) => {
     return db.query(`
@@ -14,4 +15,12 @@ exports.selectCommentsByArticleID = (article_id) => {
         }
         return res
     })
+}
+
+exports.insertCommentByArticleID = (comment) => {
+    return db.query(format(`
+    INSERT INTO comments
+    (votes, created_at, author, body, article_id)
+    VALUES %L RETURNING *
+    `, [comment]))
 }

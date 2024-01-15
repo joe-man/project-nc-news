@@ -3,7 +3,7 @@ const request = require("supertest")
 const app = require("../app.js")
 const seed = require("../db/seeds/seed.js")
 const db = require("../db/connection.js")
-const toBeSorted = require("jest-sorted")
+const toBeSortedBy = require("jest-sorted")
 
 afterAll(()=>{
     return db.end();
@@ -121,7 +121,6 @@ describe("GET", () => {
                     expect(Object.keys(comment).length).toBe(6)
                     expect(typeof comment.comment_id).toBe("number")
                     expect(typeof comment.votes).toBe("number")
-                    expect(typeof comment.created_at).toBe("string")
                     expect(typeof comment.author).toBe("string")
                     expect(typeof comment.created_at).toBe("string")
                     expect(typeof comment.body).toBe("string")
@@ -143,6 +142,29 @@ describe("GET", () => {
             .expect(400)
             .then(({body: {msg}}) => {
                 expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+    })
+})
+
+describe("POST", () => {
+    describe("/api/articles/:article_id/comments", () => {
+        test("201 - returns the posted comment which contains username and body properties", () => {
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                username: "butter_bridge",
+                body: "This movie deserves 5 gigantic stars"
+            })
+            .expect(201)
+            .then(({body: {comment}}) => {
+                expect(Object.keys(comment).length).toBe(6)
+                expect(comment.comment_id).toBe(19)
+                expect(comment.votes).toBe(0)
+                expect(comment.created_at.slice(0,10)).toBe(new Date().toJSON().slice(0,10))
+                expect(comment.author).toBe("butter_bridge")
+                expect(comment.body).toBe("This movie deserves 5 gigantic stars")
+                expect(comment.article_id).toBe(1)
             })
         })
     })

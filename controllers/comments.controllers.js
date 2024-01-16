@@ -1,23 +1,10 @@
-const { selectCommentsByArticleID, insertCommentByArticleID } = require("../models/comments.models")
+const {deleteFromComment} = require("../models/comments.models.js")
 
-exports.getCommentsByArticleID = (req, res, next) => {
-    const {article_id} = req.params
-    selectCommentsByArticleID(article_id)
-    .then(({rows: comments}) => {
-        res.status(200).send({comments})
+exports.deleteComment = (req, res, next) => {
+    const {comment_id} = req.params
+    deleteFromComment(comment_id)
+    .then(() => {
+        res.status(204).send()
     })
     .catch(next)
-}
-
-exports.postCommentByArticleID = (req, res, next) => {
-    const {article_id} = req.params
-    const {username, body} = req.body
-    const comment = [username, body, article_id]
-    insertCommentByArticleID(comment)
-    .then(({rows: [comment]}) => {
-        res.status(201).send({comment})
-    })
-    .catch(err => {
-        next(err)
-    })
 }

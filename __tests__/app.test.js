@@ -145,6 +145,22 @@ describe("GET", () => {
             })
         })
     })
+    describe("/api/users", () => {
+        test("200 - returns all users", () => {
+            return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({body: {users}}) => {
+                expect(users.length).toBe(4)
+                users.forEach(user => {
+                    expect(Object.keys(user).length).toBe(3)
+                    expect(typeof user.username).toBe("string")
+                    expect(typeof user.name).toBe("string")
+                    expect(typeof user.avatar_url).toBe("string")
+                })
+            })
+        })
+    })
 })
 
 describe("POST", () => {

@@ -3,8 +3,11 @@ const format = require("pg-format")
 
 exports.selectArticleByID = (article_id) => {
     return db.query(`
-    SELECT * FROM articles
-    WHERE article_id = $1
+    SELECT a.*, COUNT(c.comment_id) comment_count
+    FROM articles a
+    LEFT OUTER JOIN comments c on c.article_id = a.article_id
+    WHERE a.article_id = $1
+    GROUP BY a.article_id
     `, [article_id])
     .then((res) => {
         if (res.rows.length === 0) {

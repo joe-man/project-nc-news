@@ -298,3 +298,29 @@ describe("PATCH", () => {
         })
     })
 })
+
+describe("DELETE", () => {
+    describe("/api/comments/:comment_id", () => {
+        test("204 - responds with no content on success", () => {
+            return request(app)
+            .delete("/api/comments/1")
+            .expect(204)
+        })
+        test("404 - when non-existent id given", () => {
+            return request(app)
+            .delete("/api/comments/999")
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Resource not found")
+            })
+        })
+        test("400 - when invalid id given", () => {
+            return request(app)
+            .delete("/api/comments/dragons")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+    })
+})

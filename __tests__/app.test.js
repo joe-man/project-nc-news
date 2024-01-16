@@ -216,6 +216,18 @@ describe("POST", () => {
                 expect(msg).toBe("Invalid datatype of input")
             })
         })
+        test("404 - when provided a username which does not exist", () => {
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                username: "movie_lover_999",
+                body: "This movie deserves 5 gigantic stars",
+            })
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Key (author)=(movie_lover_999) is not present in table \"users\".")
+            })
+        })
     })
 })
 
@@ -229,7 +241,6 @@ describe("PATCH", () => {
             })
             .expect(200)
             .then(({body: {article}}) => {
-                console.log(article)
                 expect(Object.keys(article).length).toBe(8)
                 expect(article.article_id).toBe(1)
                 expect(article.title).toBe("Living in the shadow of a great man")

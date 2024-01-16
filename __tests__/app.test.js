@@ -176,7 +176,7 @@ describe("POST", () => {
             })
             .expect(400)
             .then(({body: {msg}}) => {
-                expect(msg).toBe("Missing data for post request, please ensure a body with keys 'username' and 'body'")
+                expect(msg).toBe("Missing data for request")
             })
         })
         test("400 - when the body does only contains body", () => {
@@ -187,7 +187,7 @@ describe("POST", () => {
             })
             .expect(400)
             .then(({body: {msg}}) => {
-                expect(msg).toBe("Missing data for post request, please ensure a body with keys 'username' and 'body'")
+                expect(msg).toBe("Missing data for request")
             })
         })
         test("404 - when provided a non existent article ID", () => {
@@ -216,29 +216,85 @@ describe("POST", () => {
                 expect(msg).toBe("Invalid datatype of input")
             })
         })
+        test("404 - when provided a username which does not exist", () => {
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                username: "movie_lover_999",
+                body: "This movie deserves 5 gigantic stars",
+            })
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Key (author)=(movie_lover_999) is not present in table \"users\".")
+            })
+        })
     })
 })
 
-// describe("PATCH", () => {
-//     describe("/api/articles/:article_id", () => {
-//         test("200 - returns no content indicating a successful patch", () => {
-//             return request(app)
-//             .patch("/api/articles/1")
-//             .send({
-//                 inc_votes: 50
-//             })
-//             .expect(200)
-//             .then(({body: {article}}) => {
-//                 expect(Object.keys(article).length).toBe(8)
-//                 expect(article.article_id).toBe(1)
-//                 expect(article.title).toBe("Living in the shadow of a great man")
-//                 expect(article.topic).toBe("mitch")
-//                 expect(article.author).toBe("butter_bridge")
-//                 expect(article.body).toBe("I find this existence challenging")
-//                 expect(article.created_at).toBe("2020-07-09T20:11:00.000Z")
-//                 expect(article.votes).toBe(150)
-//                 expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
-//             })
-//         })
-//     })
-// })
+describe("PATCH", () => {
+    describe("/api/articles/:article_id", () => {
+        test("200 - returns no content indicating a successful patch", () => {
+            return request(app)
+            .patch("/api/articles/1")
+            .send({
+                inc_votes: -50
+            })
+            .expect(200)
+            .then(({body: {article}}) => {
+                expect(Object.keys(article).length).toBe(8)
+                expect(article.article_id).toBe(1)
+                expect(article.title).toBe("Living in the shadow of a great man")
+                expect(article.topic).toBe("mitch")
+                expect(article.author).toBe("butter_bridge")
+                expect(article.body).toBe("I find this existence challenging")
+                expect(article.created_at).toBe("2020-07-09T20:11:00.000Z")
+                expect(article.votes).toBe(50)
+                expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+            })
+        })
+        test("400 - when invalid value is given for votes input", () => {
+            return request(app)
+            .patch("/api/articles/1")
+            .send({
+                inc_votes: "one"
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+               expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+        test("400 - when inc_votes is missing", () => {
+            return request(app)
+            .patch("/api/articles/1")
+            .send({
+                inc_vote: 1
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+               expect(msg).toBe("Missing data for request")
+            })
+        })
+        test("404 - when article ID does not exist", () => {
+            return request(app)
+            .patch("/api/articles/999")
+            .send({
+                inc_votes: 1
+            })
+            .expect(404)
+            .then(({body: {msg}}) => {
+               expect(msg).toBe("Article with this ID was not found")
+            })
+        })
+        test("400 - when article ID is invalid", () => {
+            return request(app)
+            .patch("/api/articles/dragons")
+            .send({
+                inc_votes: 1
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+               expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+    })
+})

@@ -20,7 +20,7 @@ exports.selectCommentsByArticleID = (article_id) => {
 exports.insertCommentByArticleID = (comment) => {
     return db.query(format(`
     INSERT INTO comments
-    (votes, created_at, author, body, article_id)
+    (author, body, article_id)
     VALUES %L RETURNING *
     `, [comment]))
 }

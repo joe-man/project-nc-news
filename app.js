@@ -30,6 +30,18 @@ app.use((err, req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
+    if (err.code === "23502") {
+        res.status(400).send({ msg: "Missing data for post request, please ensure a body with keys 'username' and 'body'"})
+    } else next(err)
+})
+
+app.use((err, req, res, next) => {
+    if (err.code === "23503") {
+        res.status(404).send({ msg: err.detail})
+    } else next(err)
+})
+
+app.use((err, req, res, next) => {
     console.log(err)
     res.status(500).send({msg :err.msg})
 })

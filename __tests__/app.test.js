@@ -47,7 +47,7 @@ describe("GET", () => {
                     expect(Object.keys(innerObject).length).toBe(4)
                     expect(typeof innerObject.description).toBe("string")
                     expect(Array.isArray(innerObject.queries)).toBe(true)
-                    expect(typeof innerObject.formatRequestBody).toBe("string")
+                    expect(typeof innerObject.formatRequestBody).toBe("object")
                     expect(typeof innerObject.exampleResponse).toBe("object")
                 }
             })
@@ -149,12 +149,13 @@ describe("GET", () => {
 
 describe("POST", () => {
     describe("/api/articles/:article_id/comments", () => {
-        test("201 - returns the posted comment which contains username and body properties", () => {
+        test("201 - returns the posted comment which contains username and body properties, unnecessary keys are ignored", () => {
             return request(app)
             .post("/api/articles/1/comments")
             .send({
                 username: "butter_bridge",
-                body: "This movie deserves 5 gigantic stars"
+                body: "This movie deserves 5 gigantic stars",
+                votes: 100
             })
             .expect(201)
             .then(({body: {comment}}) => {
@@ -165,6 +166,54 @@ describe("POST", () => {
                 expect(comment.author).toBe("butter_bridge")
                 expect(comment.body).toBe("This movie deserves 5 gigantic stars")
                 expect(comment.article_id).toBe(1)
+            })
+        })
+        test("400 - when the body does only contains username", () => {
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                username: "butter_bridge"
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Missing data for post request, please ensure a body with keys 'username' and 'body'")
+            })
+        })
+        test("400 - when the body does only contains body", () => {
+            return request(app)
+            .post("/api/articles/1/comments")
+            .send({
+                body: "This movie deserves 5 gigantic stars"
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Missing data for post request, please ensure a body with keys 'username' and 'body'")
+            })
+        })
+        test("404 - when provided a non existent article ID", () => {
+            return request(app)
+            .post("/api/articles/999/comments")
+            .send({
+                username: "butter_bridge",
+                body: "This movie deserves 5 gigantic stars",
+                votes: 5
+            })
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Key (article_id)=(999) is not present in table \"articles\".")
+            })
+        })
+        test("400 - when provided an invalid article ID", () => {
+            return request(app)
+            .post("/api/articles/dragons/comments")
+            .send({
+                username: "butter_bridge",
+                body: "This movie deserves 5 gigantic stars",
+                votes: 5
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype of input")
             })
         })
     })

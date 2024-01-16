@@ -1,8 +1,8 @@
 # Northcoders News API
 
-run command: npm i dotenv
+Run command: npm i dotenv
 
-Create the following files and the data within the files:
+Create the following files and add the data to each respectively file:
 
 ./.env.test -> PGDATABASE = nc_news_test;
 

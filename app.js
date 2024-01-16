@@ -22,7 +22,8 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleID)
 
 app.use((err, req, res, next) => {
     if (err.status === 404) {
-        res.status(404).send({ msg: "Not Found"})
+        if (!err.msg) err.msg = "Not Found"
+        res.status(404).send({ msg: err.msg})
     } else next(err)
 })
 
@@ -34,7 +35,7 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
     if (err.code === "23502") {
-        res.status(400).send({ msg: "Missing data for post request, please ensure a body with keys 'username' and 'body'"})
+        res.status(400).send({ msg: "Missing data for request"})
     } else next(err)
 })
 

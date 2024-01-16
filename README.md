@@ -1,13 +1,34 @@
 # Northcoders News API
 
-Run command: npm i dotenv
+## Getting Started
 
-Create the following files and add the data to each respectively file:
+Install packages:
 
-./.env.test -> PGDATABASE = nc_news_test;
+```bash
+npm install
+```
 
-./.env.dev -> PGDATABASE = nc_news;
+```bash
+npm install dotenv
+```
 
-./.gitignore -> .env.*
+Please install PSQL for your MAC or PC
+
+## Create the following files and add data to each respectively file:
+
+./.env.test
+```bash
+PGDATABASE = nc_news_test;
+```
+
+./.env.dev
+```bash
+PGDATABASE = nc_news;
+```
+
+./.gitignore
+```bash
+.env.*
+```
 
 

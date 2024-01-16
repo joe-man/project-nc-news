@@ -108,6 +108,62 @@ describe("GET", () => {
                 })
             })
         })
+        test("200 - returns all articles with mitch topics", () => {
+            return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(12)
+                expect(articles).toBeSortedBy("created_at", {descending: true})
+                articles.forEach(article => {
+                    expect(article.topic).toBe("mitch")
+                    expect(typeof article.article_id).toBe("number")
+                    expect(typeof article.title).toBe("string")
+                    expect(typeof article.author).toBe("string")
+                    expect(typeof article.created_at).toBe("string")
+                    expect(typeof article.votes).toBe("number")
+                    expect(typeof article.article_img_url).toBe("string")
+                    expect(article.hasOwnProperty("body")).toBe(false)
+                    expect(Object.keys(article).length).toBe(7)
+                })
+            })
+        })
+        test("200 - returns all articles with cats topics", () => {
+            return request(app)
+            .get("/api/articles?topic=cats")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(1)
+                expect(articles).toBeSortedBy("created_at", {descending: true})
+                articles.forEach(article => {
+                    expect(article.topic).toBe("cats")
+                    expect(typeof article.article_id).toBe("number")
+                    expect(typeof article.title).toBe("string")
+                    expect(typeof article.author).toBe("string")
+                    expect(typeof article.created_at).toBe("string")
+                    expect(typeof article.votes).toBe("number")
+                    expect(typeof article.article_img_url).toBe("string")
+                    expect(article.hasOwnProperty("body")).toBe(false)
+                    expect(Object.keys(article).length).toBe(7)
+                })
+            })
+        })
+        test("200 - returns all articles with paper topics", () => {
+            return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(0)
+            })
+        })
+        test("404 - when non existent topic is given", () => {
+            return request(app)
+            .get("/api/articles?topic=dragons")
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Resource not found")
+            })
+        })
     })
     describe("/api/article/:article_id/comments", () => {
         test("200 - returns all comments for an article", () => {

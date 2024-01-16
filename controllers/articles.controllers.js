@@ -1,3 +1,4 @@
+const { checkColumnExists } = require("../db/seeds/utils")
 const { selectArticles, selectArticleByID, updateArticleByArticleID, selectCommentsByArticleID, insertCommentByArticleID  } = require("../models/articles.models")
 
 exports.getArticleByArticleID = ((req, res, next)=> {
@@ -12,8 +13,14 @@ exports.getArticleByArticleID = ((req, res, next)=> {
 })
 
 exports.getArticles = ((req, res, next) => {
-    selectArticles()
-    .then(({rows: articles}) => {
+    const {topic} = req.query
+    const query = [selectArticles(topic)]
+    if (topic) {
+        const topicExists = checkColumnExists("topics", "slug", topic)
+        query.push(topicExists)
+    }
+    Promise.all(query)
+    .then(([{rows: articles}]) => {
         res.status(200).send({articles})
     })
     .catch(next)

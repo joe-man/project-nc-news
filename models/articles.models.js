@@ -16,11 +16,12 @@ exports.selectArticleByID = (article_id) => {
     })
 }
 
-exports.selectArticles = () => {
-    return db.query(`
-    SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles
-    ORDER BY created_at desc
-    `)
+exports.selectArticles = (topic) => {
+    let query = "SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles"
+    if (topic) query += ` WHERE topic = '${topic}'`
+    query += " ORDER BY created_at desc"
+
+    return db.query(query)
 }
 
 exports.updateArticleByArticleID = (article_id, inc_votes) => {

@@ -266,6 +266,27 @@ describe("GET", () => {
             })
         })
     })
+    describe("/api/users/:username", () => {
+        test("200 - returns a user by username", () => {
+            return request(app)
+            .get('/api/users/lurker')
+            .expect(200)
+            .then(({body: {user}}) => {
+                expect(Object.keys(user).length).toBe(3)
+                expect(user.username).toBe("lurker")
+                expect(user.name).toBe("do_nothing")
+                expect(user.avatar_url).toBe('https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png')
+            })
+        })
+        test("404 - when input username is not found", () => {
+            return request(app)
+            .get('/api/users/beanbag')
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("User by 'beanbag' was not found")
+            })
+        })
+    })
 })
 
 describe("POST", () => {

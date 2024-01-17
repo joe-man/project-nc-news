@@ -1,18 +1,17 @@
 # Northcoders News API
 
-## Getting Started
+## About
 
-Install packages:
+This project is an API which can access application data programmatically.
+You can find the hosted API [here](https://project-nc-news-w769.onrender.com)
+
+## Install Packages
 
 ```bash
 npm install
 ```
 
-```bash
-npm install dotenv
-```
-
-Please install PSQL for your MAC or PC
+PSQL for your MAC or PC
 
 ## Create the following files and add data to each respectively file:
 
@@ -30,5 +29,23 @@ PGDATABASE = nc_news;
 ```bash
 .env.*
 ```
+## Seed Local Database
 
+```bash
+npm run setup-dbs
+```
 
+To run tests on test database
+```bash
+npm test
+```
+
+To seed the development database
+```bash
+npm run seed
+```
+
+To seed the production database
+```bash
+npm run seed-prod
+```

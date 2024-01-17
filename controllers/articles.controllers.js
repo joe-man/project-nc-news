@@ -13,8 +13,8 @@ exports.getArticleByArticleID = ((req, res, next)=> {
 })
 
 exports.getArticles = ((req, res, next) => {
-    const {topic} = req.query
-    const query = [selectArticles(topic)]
+    const {topic, sort_by, order} = req.query
+    const query = [selectArticles(topic, sort_by, order)]
     if (topic) {
         const topicExists = checkColumnExists("topics", "slug", topic)
         query.push(topicExists)

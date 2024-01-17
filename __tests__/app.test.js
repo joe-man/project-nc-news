@@ -157,6 +157,62 @@ describe("GET", () => {
                 expect(msg).toBe("Resource not found")
             })
         })
+        test("200 - returns articles sorted by votes column and asc", () => {
+            return request(app)
+            .get("/api/articles?sort_by=votes&order=asc")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(13)
+                expect(articles).toBeSortedBy("votes", {descending: false})
+                articles.forEach(article => {
+                    expect(Object.keys(article).length).toBe(7)
+                    expect(typeof article.article_id).toBe("number")
+                    expect(typeof article.title).toBe("string")
+                    expect(typeof article.topic).toBe("string")
+                    expect(typeof article.author).toBe("string")
+                    expect(typeof article.created_at).toBe("string")
+                    expect(typeof article.votes).toBe("number")
+                    expect(typeof article.article_img_url).toBe("string")
+                    expect(article.hasOwnProperty("body")).toBe(false)
+                })
+            })
+        })
+        test("200 - returns articles sorted by title column and asc", () => {
+            return request(app)
+            .get("/api/articles?sort_by=title&order=asc")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(13)
+                expect(articles).toBeSortedBy("title", {descending: false})
+                articles.forEach(article => {
+                    expect(Object.keys(article).length).toBe(7)
+                    expect(typeof article.article_id).toBe("number")
+                    expect(typeof article.title).toBe("string")
+                    expect(typeof article.topic).toBe("string")
+                    expect(typeof article.author).toBe("string")
+                    expect(typeof article.created_at).toBe("string")
+                    expect(typeof article.votes).toBe("number")
+                    expect(typeof article.article_img_url).toBe("string")
+                    expect(article.hasOwnProperty("body")).toBe(false)
+                })
+            })
+        })
+        test("400 - when given a sort by parameter which doesn't exist", () => {
+            return request(app)
+            .get("/api/articles?sort_by=baby&order=asc")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid column for sorting")
+            })
+        })
+        test("400 - when given an order parameter which doesn't exist", () => {
+            return request(app)
+            .get("/api/articles?sort_by=votes&order=des")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid sorting order")
+            })
+        })
     })
     describe("/api/article/:article_id/comments", () => {
         test("200 - returns all comments for an article", () => {

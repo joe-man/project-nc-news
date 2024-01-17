@@ -1,5 +1,6 @@
 const db = require("../db/connection.js")
 const format = require("pg-format")
+const { sort } = require("../db/data/test-data/articles.js")
 
 exports.selectArticleByID = (article_id) => {
     return db.query(`
@@ -19,12 +20,22 @@ exports.selectArticleByID = (article_id) => {
     })
 }
 
-exports.selectArticles = (topic) => {
-    let query = "SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles"
-    if (topic) query += ` WHERE topic = '${topic}'`
-    query += " ORDER BY created_at desc"
+exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
+    const validSortBy = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url"]
+    const validOrder = ["ASC", "asc", "DESC", "desc"]
+    if (!validSortBy.includes(sort_by)) {return Promise.reject({ status: 400, msg: "Invalid column for sorting"})}
+    if (!validOrder.includes(order)) {return Promise.reject({ status: 400, msg: "Invalid sorting order"})}
 
-    return db.query(query)
+    const parameters = []
+
+    let query = "SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles"
+    if (topic) {
+        query += ` WHERE topic = $1`
+        parameters.push(topic)
+    }
+    query += ` ORDER BY ${sort_by} ${order}` 
+
+    return db.query(query, parameters)
 }
 
 exports.updateArticleByArticleID = (article_id, inc_votes) => {

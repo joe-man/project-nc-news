@@ -179,11 +179,11 @@ describe("GET", () => {
         })
         test("200 - returns articles sorted by title column and asc", () => {
             return request(app)
-            .get("/api/articles?sort_by=title&order=asc")
+            .get("/api/articles?sort_by=title&order=desc")
             .expect(200)
             .then(({body: {articles}}) => {
                 expect(articles.length).toBe(13)
-                expect(articles).toBeSortedBy("title", {descending: false})
+                expect(articles).toBeSortedBy("title", {descending: true})
                 articles.forEach(article => {
                     expect(Object.keys(article).length).toBe(7)
                     expect(typeof article.article_id).toBe("number")

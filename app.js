@@ -1,28 +1,10 @@
 const express = require("express")
-const { getTopics } = require("./controllers/topics.controllers")
-const { getEndpoints } = require("./controllers/api.controllers")
-const { getArticleByArticleID, getArticles, patchArticleByArticleID, getCommentsByArticleID, postCommentByArticleID } = require("./controllers/articles.controllers")
-const { deleteComment } = require("./controllers/comments.controllers.js")
-const { getUsers } = require("./controllers/users.controllers.js")
+const apiRouter = require("./routes/api-router.js")
+
 const app = express()
 
 app.use(express.json());
-
-app.get("/api", getEndpoints)
-app.get("/api/topics", getTopics)
-
-app.get("/api/articles/:article_id", getArticleByArticleID)
-app.patch("/api/articles/:article_id", patchArticleByArticleID)
-
-app.get("/api/articles", getArticles)
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
-app.post("/api/articles/:article_id/comments", postCommentByArticleID)
-
-app.delete("/api/comments/:comment_id", deleteComment)
-
-app.get("/api/users", getUsers)
-
+app.use("/api", apiRouter)
 
 app.use((err, req, res, next) => {
     if (err.status === 404) {

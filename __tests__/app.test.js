@@ -375,7 +375,7 @@ describe("POST", () => {
 
 describe("PATCH", () => {
     describe("/api/articles/:article_id", () => {
-        test("200 - returns no content indicating a successful patch", () => {
+        test("200 - returns updated object indicating a successful patch", () => {
             return request(app)
             .patch("/api/articles/1")
             .send({
@@ -436,6 +436,70 @@ describe("PATCH", () => {
             .expect(400)
             .then(({body: {msg}}) => {
                expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+    })
+    describe("/api/comments/:comment_id", () => {
+        test("200 - returns the updated object with votes incremented", () => {
+            return request(app)
+            .patch("/api/comments/1")
+            .send({
+                inc_votes: 10
+            })
+            .expect(200)
+            .then(({body: {comment}}) => {
+                console.log(comment)
+                expect(Object.keys(comment).length).toBe(6)
+                expect(comment.comment_id).toBe(1)
+                expect(comment.body).toBe("Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!")
+                expect(comment.votes).toBe(26)
+                expect(comment.author).toBe("butter_bridge")
+                expect(comment.article_id).toBe(9)
+                expect(comment.created_at).toBe("2020-04-06T12:17:00.000Z")
+            })
+        })
+        test("404 - when comment id does not exist", () => {
+            return request(app)
+            .patch("/api/comments/999")
+            .send({
+                inc_votes: 10
+            })
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Comment ID '999' does not exist")
+            })
+        })
+        test("400 - when comment id is invalid", () => {
+            return request(app)
+            .patch("/api/comments/one")
+            .send({
+                inc_votes: 10
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+        test("400 - inc_votes is not included in the input object", () => {
+            return request(app)
+            .patch("/api/comments/1")
+            .send({
+                inc_vot: 10
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Missing data for request")
+            })
+        })
+        test("400 - wrong datatype for inc_votes value", () => {
+            return request(app)
+            .patch("/api/comments/1")
+            .send({
+                inc_votes: "ten"
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype of input")
             })
         })
     })

@@ -371,6 +371,97 @@ describe("POST", () => {
             })
         })
     })
+    describe("/api/articles", () => {
+        test("201 - returns the created article object", () => {
+            return request(app)
+            .post("/api/articles")
+            .send({
+                author: "icellusedkars",
+                title: "How to cell bad products",
+                body: "Hide the defects",
+                topic: "mitch",
+                article_img_url: "https://fakeurl"
+            })
+            .expect(201)
+            .then(({body: {article}}) => {
+                expect(Object.keys(article).length).toBe(9)
+                expect(article.author).toBe("icellusedkars")
+                expect(article.title).toBe("How to cell bad products")
+                expect(article.body).toBe("Hide the defects")
+                expect(article.topic).toBe("mitch")
+                expect(article.article_img_url).toBe("https://fakeurl")
+                expect(article.article_id).toBe(14)
+                expect(article.votes).toBe(0)
+                expect(article.created_at.slice(0,10)).toBe(new Date().toJSON().slice(0,10))
+                expect(article.comment_count).toBe(0)
+            })
+        })
+        test("201 - returns object with default article url if not provided", () => {
+            return request(app)
+            .post("/api/articles")
+            .send({
+                author: "icellusedkars",
+                title: "How to cell bad products",
+                body: "Hide the defects",
+                topic: "mitch"
+            })
+            .expect(201)
+            .then(({body: {article}}) => {
+                console.log(article)
+                expect(Object.keys(article).length).toBe(9)
+                expect(article.author).toBe("icellusedkars")
+                expect(article.title).toBe("How to cell bad products")
+                expect(article.body).toBe("Hide the defects")
+                expect(article.topic).toBe("mitch")
+                expect(article.article_img_url).toBe('https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700')
+                expect(article.article_id).toBe(14)
+                expect(article.votes).toBe(0)
+                expect(article.created_at.slice(0,10)).toBe(new Date().toJSON().slice(0,10))
+                expect(article.comment_count).toBe(0)
+            })
+        })
+        test("400 - when missing any of the other mandatory properties", () => {
+            return request(app)
+            .post("/api/articles")
+            .send({
+                author: "icellusedkars",
+                title: "How to cell bad products",
+                body: "Hide the defects",
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Missing data for request")
+            })
+        })
+        test("404 - when topic provided does not exist", () => {
+            return request(app)
+            .post("/api/articles")
+            .send({
+                author: "icellusedkars",
+                title: "How to cell bad products",
+                body: "Hide the defects",
+                topic: "dragons"
+            })
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Key (topic)=(dragons) is not present in table \"topics\".")
+            })
+        })
+        test("404 - when author provided does not exist", () => {
+            return request(app)
+            .post("/api/articles")
+            .send({
+                author: "joe man",
+                title: "How to cell bad products",
+                body: "Hide the defects",
+                topic: "mitch"
+            })
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Key (author)=(joe man) is not present in table \"users\".")
+            })
+        })
+    })
 })
 
 describe("PATCH", () => {
@@ -448,7 +539,6 @@ describe("PATCH", () => {
             })
             .expect(200)
             .then(({body: {comment}}) => {
-                console.log(comment)
                 expect(Object.keys(comment).length).toBe(6)
                 expect(comment.comment_id).toBe(1)
                 expect(comment.body).toBe("Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!")

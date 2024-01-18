@@ -61,11 +61,12 @@ exports.updateArticleByArticleID = (article_id, inc_votes) => {
     })
 }
 
-exports.selectCommentsByArticleID = (article_id) => {
+exports.selectCommentsByArticleID = (article_id, limit = 10, p = 0) => {
     return db.query(`
     SELECT * FROM comments
     WHERE article_id = $1
     ORDER BY created_at desc
+    LIMIT ${limit} OFFSET ${p}
     `, [article_id])
     .then((res) => {
         if (res.rows.length === 0) {

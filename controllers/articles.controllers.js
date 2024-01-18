@@ -47,7 +47,14 @@ exports.patchArticleByArticleID = (req, res, next) => {
 
 exports.getCommentsByArticleID = (req, res, next) => {
     const {article_id} = req.params
-    selectCommentsByArticleID(article_id)
+    let {limit, p} = req.query
+
+    if (p) {
+        if (!limit) limit = 10
+        p = (p - 1) * limit
+    }
+
+    selectCommentsByArticleID(article_id, limit, p)
     .then(({rows: comments}) => {
         res.status(200).send({comments})
     })

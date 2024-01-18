@@ -328,7 +328,6 @@ describe("GET", () => {
             .expect(200)
             .then(({body: {comments}}) => {
                 expect(comments).toBeSortedBy("created_at", {descending: true})
-                expect(comments.length).toBe(11)
                 comments.forEach(comment => {
                     expect(Object.keys(comment).length).toBe(6)
                     expect(typeof comment.comment_id).toBe("number")
@@ -354,6 +353,46 @@ describe("GET", () => {
             .expect(400)
             .then(({body: {msg}}) => {
                 expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+        test("200 - return default of 10 responses", () => {
+            return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({body: {comments}}) => {
+                expect(comments.length).toBe(10)
+            })
+        })
+        test("200 - return specified number of responses", () => {
+            return request(app)
+            .get("/api/articles/1/comments?limit=5")
+            .expect(200)
+            .then(({body: {comments}}) => {
+                expect(comments.length).toBe(5)
+            })
+        })
+        test("200 - return specified number of responses from the next page", () => {
+            return request(app)
+            .get("/api/articles/1/comments?limit=10&p=2")
+            .expect(200)
+            .then(({body: {comments}}) => {
+                expect(comments.length).toBe(1)
+            })
+        })
+        test("400 - when not a number is given to limit query", () => {
+            return request(app)
+            .get("/api/articles/1/comments?limit=one")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype for query")
+            })
+        })
+        test("400 - when not a number is given to p query", () => {
+            return request(app)
+            .get("/api/articles/1/comments?p=two")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype for query")
             })
         })
     })

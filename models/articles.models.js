@@ -21,20 +21,27 @@ exports.selectArticleByID = (article_id) => {
     })
 }
 
-exports.selectArticles = (topic, sort_by = "created_at", order = "desc") => {
+exports.selectArticles = (topic, sort_by = "created_at", order = "desc", limit, p = 0) => {
     const validSortBy = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url"]
     const validOrder = ["ASC", "asc", "DESC", "desc"]
-    if (!validSortBy.includes(sort_by)) {return Promise.reject({ status: 400, msg: "Invalid column for sorting"})}
-    if (!validOrder.includes(order)) {return Promise.reject({ status: 400, msg: "Invalid sorting order"})}
+    if (!validSortBy.includes(sort_by)) return Promise.reject({ status: 400, msg: "Invalid column for sorting"})
+    if (!validOrder.includes(order)) return Promise.reject({ status: 400, msg: "Invalid sorting order"})
 
     const parameters = []
 
-    let query = "SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles"
+
+    let query = `SELECT article_id, title, topic, author, created_at, votes, article_img_url`
+    limit ? query += `, ${limit} total_count` : query += `, (SELECT COUNT(*) FROM articles) total_count`
+    query += ` FROM articles`
+
     if (topic) {
         query += ` WHERE topic = $1`
         parameters.push(topic)
     }
+
     query += ` ORDER BY ${sort_by} ${order}` 
+
+    if (limit) query += ` LIMIT ${limit} OFFSET ${p}`
 
     return db.query(query, parameters)
 }

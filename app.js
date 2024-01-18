@@ -39,6 +39,12 @@ app.use((err, req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
+    if (err.code === "42703") {
+        res.status(400).send({ msg: "Invalid datatype for query"})
+    } else next(err)
+})
+
+app.use((err, req, res, next) => {
     console.log(err)
     res.status(500).send({msg :err.msg})
 })

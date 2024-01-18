@@ -85,11 +85,10 @@ describe("GET", () => {
             return request(app)
             .get("/api/articles")
             .expect(200)
-            .then(({body: {articles}}) => {
+            .then(({body: {articles, msg}}) => {
                 expect(articles.length).toBe(13)
                 expect(articles).toBeSortedBy("created_at", {descending: true})
                 articles.forEach(article => {
-                    expect(Object.keys(article).length).toBe(7)
                     expect(typeof article.article_id).toBe("number")
                     expect(typeof article.title).toBe("string")
                     expect(typeof article.topic).toBe("string")
@@ -117,7 +116,6 @@ describe("GET", () => {
                     expect(typeof article.votes).toBe("number")
                     expect(typeof article.article_img_url).toBe("string")
                     expect(article.hasOwnProperty("body")).toBe(false)
-                    expect(Object.keys(article).length).toBe(7)
                 })
             })
         })
@@ -137,7 +135,6 @@ describe("GET", () => {
                     expect(typeof article.votes).toBe("number")
                     expect(typeof article.article_img_url).toBe("string")
                     expect(article.hasOwnProperty("body")).toBe(false)
-                    expect(Object.keys(article).length).toBe(7)
                 })
             })
         })
@@ -165,7 +162,6 @@ describe("GET", () => {
                 expect(articles.length).toBe(13)
                 expect(articles).toBeSortedBy("votes", {descending: false})
                 articles.forEach(article => {
-                    expect(Object.keys(article).length).toBe(7)
                     expect(typeof article.article_id).toBe("number")
                     expect(typeof article.title).toBe("string")
                     expect(typeof article.topic).toBe("string")
@@ -185,7 +181,6 @@ describe("GET", () => {
                 expect(articles.length).toBe(13)
                 expect(articles).toBeSortedBy("title", {descending: true})
                 articles.forEach(article => {
-                    expect(Object.keys(article).length).toBe(7)
                     expect(typeof article.article_id).toBe("number")
                     expect(typeof article.title).toBe("string")
                     expect(typeof article.topic).toBe("string")
@@ -211,6 +206,118 @@ describe("GET", () => {
             .expect(400)
             .then(({body: {msg}}) => {
                 expect(msg).toBe("Invalid sorting order")
+            })
+        })
+        test("200 - returned default limit of 10 when limit query is used", () => {
+            return request(app)
+            .get("/api/articles?limit")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(10)
+                expect(articles).toBeSortedBy("created_at", {descending: true})
+                articles.forEach(article => {
+                    expect(typeof article.article_id).toBe("number")
+                    expect(typeof article.title).toBe("string")
+                    expect(typeof article.topic).toBe("string")
+                    expect(typeof article.author).toBe("string")
+                    expect(typeof article.created_at).toBe("string")
+                    expect(typeof article.votes).toBe("number")
+                    expect(typeof article.article_img_url).toBe("string")
+                    expect(article.hasOwnProperty("body")).toBe(false)
+                })
+            })
+        })
+        test("200 - returned specified limit of 5 when limit query is used", () => {
+            return request(app)
+            .get("/api/articles?limit=5")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(5)
+                expect(articles).toBeSortedBy("created_at", {descending: true})
+                articles.forEach(article => {
+                    expect(typeof article.article_id).toBe("number")
+                    expect(typeof article.title).toBe("string")
+                    expect(typeof article.topic).toBe("string")
+                    expect(typeof article.author).toBe("string")
+                    expect(typeof article.created_at).toBe("string")
+                    expect(typeof article.votes).toBe("number")
+                    expect(typeof article.article_img_url).toBe("string")
+                    expect(article.hasOwnProperty("body")).toBe(false)
+                })
+            })
+        })
+        test("200 - returned all articles when limit is higher than max articles", () => {
+            return request(app)
+            .get("/api/articles?limit=20")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(13)
+                expect(articles).toBeSortedBy("created_at", {descending: true})
+                articles.forEach(article => {
+                    expect(typeof article.article_id).toBe("number")
+                    expect(typeof article.title).toBe("string")
+                    expect(typeof article.topic).toBe("string")
+                    expect(typeof article.author).toBe("string")
+                    expect(typeof article.created_at).toBe("string")
+                    expect(typeof article.votes).toBe("number")
+                    expect(typeof article.article_img_url).toBe("string")
+                    expect(article.hasOwnProperty("body")).toBe(false)
+                })
+            })
+        })
+        test("400 - when invalid datatype input is given", () => {
+            return request(app)
+            .get("/api/articles?limit=one")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype for query")
+            })
+        })
+        test("200 - returned articles when p page is defined, limit default to 10 when not specified", () => {
+            return request(app)
+            .get("/api/articles?sort_by=article_id&&order=asc&p=1")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(10)
+                expect(articles).toBeSortedBy("article_id", {descending: false})
+                expect(articles[0].title).toBe("Living in the shadow of a great man")
+            })
+        })
+        test("200 - returned articles when p page is defined at 2, limit default to 10 when not specified", () => {
+            return request(app)
+            .get("/api/articles?sort_by=article_id&&order=asc&p=2")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(3)
+                expect(articles).toBeSortedBy("article_id", {descending: false})
+                expect(articles[2].title).toBe("Another article about Mitch")
+            })
+        })
+        test("200 - returned articles when p page is defined at 2, limit set at 5", () => {
+            return request(app)
+            .get("/api/articles?sort_by=article_id&&order=asc&limit=5&p=2")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(5)
+                expect(articles).toBeSortedBy("article_id", {descending: false})
+                expect(articles[0].article_id).toBe(6)
+            })
+        })
+        test("400 - when p is not a number", () => {
+            return request(app)
+            .get("/api/articles?sort_by=article_id&&order=asc&limit=5&p=two")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype for query")
+            })
+        })
+        test("200 - should return a total_count property with the number of articles returned", () => {
+            return request(app)
+            .get("/api/articles?sort_by=article_id&&order=asc&limit=5&p=2")
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(5)
+                expect(articles[0].total_count).toBe(5)
             })
         })
     })
@@ -407,7 +514,6 @@ describe("POST", () => {
             })
             .expect(201)
             .then(({body: {article}}) => {
-                console.log(article)
                 expect(Object.keys(article).length).toBe(9)
                 expect(article.author).toBe("icellusedkars")
                 expect(article.title).toBe("How to cell bad products")

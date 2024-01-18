@@ -13,12 +13,21 @@ exports.getArticleByArticleID = ((req, res, next)=> {
 })
 
 exports.getArticles = ((req, res, next) => {
-    const {topic, sort_by, order} = req.query
-    const query = [selectArticles(topic, sort_by, order)]
+    let {topic, sort_by, order, limit, p} = req.query
+    if ((req.query.hasOwnProperty("limit") && req.query.limit === "")) limit = 10 // ?limit defaults to 10
+   
+    if (p) {
+        if (!limit) limit = 10
+        p = (p - 1) * limit
+    }
+
+    const query = [selectArticles(topic, sort_by, order, limit, p)]
+
     if (topic) {
         const topicExists = checkColumnExists("topics", "slug", topic)
         query.push(topicExists)
     }
+
     Promise.all(query)
     .then(([{rows: articles}]) => {
         res.status(200).send({articles})

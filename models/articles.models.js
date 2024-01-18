@@ -1,6 +1,7 @@
 const db = require("../db/connection.js")
 const format = require("pg-format")
 const { sort } = require("../db/data/test-data/articles.js")
+const { articleData } = require("../db/data/test-data/index.js")
 
 exports.selectArticleByID = (article_id) => {
     return db.query(`
@@ -75,4 +76,26 @@ exports.insertCommentByArticleID = (comment) => {
     (author, body, article_id)
     VALUES %L RETURNING *
     `, [comment]))
+}
+
+exports.insertArticle = ({title, topic, author, body, article_img_url}) => {
+    let query = `INSERT INTO articles (title, topic, author, body`
+    let values = [title, topic, author, body]
+    if (article_img_url) {
+        query += `, article_img_url)`
+        values.push(article_img_url)
+    } else {
+        query += `)`
+    }
+    query += `    
+    VALUES %L 
+    RETURNING *, (
+        SELECT CAST(COUNT(c.comment_id) AS INTEGER)
+        FROM comments c
+        WHERE c.article_id = (SELECT max(a.article_id) FROM articles a)
+        ) comment_count`
+    return db.query(format(query, [values]))
+    .then((res) => {
+        return res
+    })
 }

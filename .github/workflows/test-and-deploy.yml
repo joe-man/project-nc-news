@@ -32,4 +32,4 @@ jobs:
         run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm run test-utils
 
       - name: Run app tests
-        run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm t
+        run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm test

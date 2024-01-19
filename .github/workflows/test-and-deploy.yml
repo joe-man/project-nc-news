@@ -1,7 +1,7 @@
 name: Test & Deploy
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -21,15 +21,15 @@ jobs:
       - name: Use PostgreSQL
         uses: harmon758/postgresql-action@v1
         with:
-          postgresql db: 'my_db'
+          postgresql db: 'nc_news_test'
           postgresql user: 'test_user'
           postgresql password: 'test_password'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run set up
-        run: npm run setup-dbs
+      - name: Run util tests
+        run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm test-utils
 
-      - name: Run tests
+      - name: Run app tests
         run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=test_password npm t

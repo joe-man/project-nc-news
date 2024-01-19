@@ -607,6 +607,32 @@ describe("POST", () => {
             })
         })
     })
+    describe("/api/topics", () => {
+        test("201 - creates a new topic and returns with the newly added topic", () => {
+            return request(app)
+            .post("/api/topics")
+            .send({
+                slug: "new topics",
+                description: "This is a new topic"
+            })
+            .expect(201)
+            .then(({body: {topic}}) => {
+                expect(topic.slug).toBe("new topics")
+                expect(topic.description).toBe("This is a new topic")
+            })
+        })
+        test("400 - when one of the mandatory keys are not provided", () => {
+            return request(app)
+            .post("/api/topics")
+            .send({
+                slug: "new topics",
+            })
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Please ensure your request body includes 'slug' and 'description'")
+            })
+        })
+    })
 })
 
 describe("PATCH", () => {

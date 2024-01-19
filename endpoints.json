@@ -189,5 +189,16 @@
         "comment_count": 0
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "adds a new topic and returns the newly added topic",
+    "queries": [],
+    "formatRequestBody": {
+      "slug": "new topics",
+      "description": "This is a new topic"
+    },
+    "exampleResponse": {
+      "topic": { "slug": "football", "description": "Footie!" }
+    }
   }
 }

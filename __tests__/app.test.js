@@ -790,4 +790,27 @@ describe("DELETE", () => {
             })
         })
     })
+    describe("/api/articles/:article_id", () => {
+        test("204 - returns no content on successful deletion", () => {
+            return request(app)
+            .delete("/api/articles/1")
+            .expect(204)
+        })
+        test("404 - when no article id of input is found", () => {
+            return request(app)
+            .delete("/api/articles/999")
+            .expect(404)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Article with this ID, not found")
+            })
+        })
+        test("400 - when invalid article id is provided", () => {
+            return request(app)
+            .delete("/api/articles/dragons")
+            .expect(400)
+            .then(({body: {msg}}) => {
+                expect(msg).toBe("Invalid datatype of input")
+            })
+        })
+    })
 })

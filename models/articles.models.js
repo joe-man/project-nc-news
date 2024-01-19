@@ -1,7 +1,5 @@
 const db = require("../db/connection.js")
 const format = require("pg-format")
-const { sort } = require("../db/data/test-data/articles.js")
-const { articleData } = require("../db/data/test-data/index.js")
 
 exports.selectArticleByID = (article_id) => {
     return db.query(`
@@ -105,5 +103,17 @@ exports.insertArticle = ({title, topic, author, body, article_img_url}) => {
     return db.query(format(query, [values]))
     .then((res) => {
         return res
+    })
+}
+
+exports.deleteArticleModel = (article_id) => {
+    return db.query(`
+    DELETE FROM articles
+    WHERE article_id = $1
+    `, [article_id])
+    .then(({rowCount}) => {
+        console.log(rowCount)
+        if (rowCount === 0) return Promise.reject({status: 404, msg: "Article with this ID, not found"})
+        return rowCount
     })
 }

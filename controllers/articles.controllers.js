@@ -1,5 +1,5 @@
 const { checkColumnExists } = require("../db/seeds/utils")
-const { selectArticles, selectArticleByID, updateArticleByArticleID, selectCommentsByArticleID, insertCommentByArticleID, insertArticle  } = require("../models/articles.models")
+const { selectArticles, selectArticleByID, updateArticleByArticleID, selectCommentsByArticleID, insertCommentByArticleID, insertArticle, deleteArticleModel  } = require("../models/articles.models")
 
 exports.getArticleByArticleID = ((req, res, next)=> {
     const {article_id} = req.params
@@ -81,4 +81,15 @@ exports.postArticle = (req, res, next) => {
         res.status(201).send({article})
     })
     .catch(next)
+}
+
+exports.deleteArticleController = (req, res, next) => {
+    const {article_id} = req.params
+    deleteArticleModel(article_id)
+    .then((rowCount) => {
+        res.status(204).send()
+    })
+    .catch(err => {
+        next(err)
+    })
 }

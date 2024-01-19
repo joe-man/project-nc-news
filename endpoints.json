@@ -200,5 +200,11 @@
     "exampleResponse": {
       "topic": { "slug": "football", "description": "Footie!" }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article by article_id",
+    "queries": [],
+    "formatRequestBody": {},
+    "exampleResponse": {}
   }
 }

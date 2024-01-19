@@ -626,7 +626,7 @@ describe("POST", () => {
             .post("/api/topics")
             .send({
                 slug: "new topics",
-            })
+            }) 
             .expect(400)
             .then(({body: {msg}}) => {
                 expect(msg).toBe("Please ensure your request body includes 'slug' and 'description'")

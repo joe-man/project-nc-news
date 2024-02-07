@@ -62,8 +62,6 @@ exports.selectArticles = (
 
   if (limit) query += ` LIMIT ${limit} OFFSET ${p}`;
 
-  console.log(query);
-
   return db.query(query, parameters);
 };
 
@@ -154,7 +152,6 @@ exports.deleteArticleModel = (article_id) => {
       [article_id]
     )
     .then(({ rowCount }) => {
-      console.log(rowCount);
       if (rowCount === 0)
         return Promise.reject({
           status: 404,

@@ -23,34 +23,16 @@ exports.selectArticleByID = (article_id) => {
     });
 };
 
-exports.selectArticles = (
-  topic,
-  sort_by = "created_at",
-  order = "desc",
-  limit,
-  p = 0
-) => {
-  const validSortBy = [
-    "article_id",
-    "title",
-    "topic",
-    "author",
-    "created_at",
-    "votes",
-    "article_img_url",
-  ];
+exports.selectArticles = (topic, sort_by = "created_at", order = "desc", limit, p = 0) => {
+  const validSortBy = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url", "comment_count"];
   const validOrder = ["ASC", "asc", "DESC", "desc"];
-  if (!validSortBy.includes(sort_by))
-    return Promise.reject({ status: 400, msg: "Invalid column for sorting" });
-  if (!validOrder.includes(order))
-    return Promise.reject({ status: 400, msg: "Invalid sorting order" });
+  if (!validSortBy.includes(sort_by)) return Promise.reject({ status: 400, msg: "Invalid column for sorting" });
+  if (!validOrder.includes(order)) return Promise.reject({ status: 400, msg: "Invalid sorting order" });
 
   const parameters = [];
 
   let query = `SELECT a.article_id, a.title, a.topic, a.author, a.created_at, a.votes, a.article_img_url, COUNT(c.comment_id) comment_count`;
-  limit
-    ? (query += `, ${limit} total_count`)
-    : (query += `, (SELECT COUNT(*) FROM articles) total_count`);
+  limit ? (query += `, ${limit} total_count`) : (query += `, (SELECT COUNT(*) FROM articles) total_count`);
   query += ` FROM articles a LEFT OUTER JOIN comments c on c.article_id = a.article_id`;
 
   if (topic) {

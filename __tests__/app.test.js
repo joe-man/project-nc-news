@@ -67,9 +67,7 @@ describe("GET", () => {
           expect(article.body).toBe("I find this existence challenging");
           expect(article.hasOwnProperty("created_at")).toBe(true);
           expect(article.votes).toBe(100);
-          expect(article.article_img_url).toBe(
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          );
+          expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
           expect(article.comment_count).toBe("11");
         });
     });
@@ -164,6 +162,26 @@ describe("GET", () => {
         .then(({ body: { articles } }) => {
           expect(articles.length).toBe(13);
           expect(articles).toBeSortedBy("votes", { descending: false });
+          articles.forEach((article) => {
+            expect(typeof article.article_id).toBe("number");
+            expect(typeof article.title).toBe("string");
+            expect(typeof article.topic).toBe("string");
+            expect(typeof article.author).toBe("string");
+            expect(typeof article.created_at).toBe("string");
+            expect(typeof article.votes).toBe("number");
+            expect(typeof article.article_img_url).toBe("string");
+            expect(article.hasOwnProperty("body")).toBe(false);
+          });
+        });
+    });
+    test.only("200 - returns articles sorted by created column and asc", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count&order=desc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          console.log(articles);
+          expect(articles.length).toBe(13);
+          expect(articles).toBeSortedBy("comment_count", { descending: false });
           articles.forEach((article) => {
             expect(typeof article.article_id).toBe("number");
             expect(typeof article.title).toBe("string");
@@ -424,9 +442,7 @@ describe("GET", () => {
           expect(Object.keys(user).length).toBe(3);
           expect(user.username).toBe("lurker");
           expect(user.name).toBe("do_nothing");
-          expect(user.avatar_url).toBe(
-            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
-          );
+          expect(user.avatar_url).toBe("https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png");
         });
     });
     test("404 - when input username is not found", () => {
@@ -455,9 +471,7 @@ describe("POST", () => {
           expect(Object.keys(comment).length).toBe(6);
           expect(comment.comment_id).toBe(19);
           expect(comment.votes).toBe(0);
-          expect(comment.created_at.slice(0, 10)).toBe(
-            new Date().toJSON().slice(0, 10)
-          );
+          expect(comment.created_at.slice(0, 10)).toBe(new Date().toJSON().slice(0, 10));
           expect(comment.author).toBe("butter_bridge");
           expect(comment.body).toBe("This movie deserves 5 gigantic stars");
           expect(comment.article_id).toBe(1);
@@ -495,9 +509,7 @@ describe("POST", () => {
         })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            'Key (article_id)=(999) is not present in table "articles".'
-          );
+          expect(msg).toBe('Key (article_id)=(999) is not present in table "articles".');
         });
     });
     test("400 - when provided an invalid article ID", () => {
@@ -522,9 +534,7 @@ describe("POST", () => {
         })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            'Key (author)=(movie_lover_999) is not present in table "users".'
-          );
+          expect(msg).toBe('Key (author)=(movie_lover_999) is not present in table "users".');
         });
     });
   });
@@ -549,9 +559,7 @@ describe("POST", () => {
           expect(article.article_img_url).toBe("https://fakeurl");
           expect(article.article_id).toBe(14);
           expect(article.votes).toBe(0);
-          expect(article.created_at.slice(0, 10)).toBe(
-            new Date().toJSON().slice(0, 10)
-          );
+          expect(article.created_at.slice(0, 10)).toBe(new Date().toJSON().slice(0, 10));
           expect(article.comment_count).toBe(0);
         });
     });
@@ -571,14 +579,10 @@ describe("POST", () => {
           expect(article.title).toBe("How to cell bad products");
           expect(article.body).toBe("Hide the defects");
           expect(article.topic).toBe("mitch");
-          expect(article.article_img_url).toBe(
-            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700"
-          );
+          expect(article.article_img_url).toBe("https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700");
           expect(article.article_id).toBe(14);
           expect(article.votes).toBe(0);
-          expect(article.created_at.slice(0, 10)).toBe(
-            new Date().toJSON().slice(0, 10)
-          );
+          expect(article.created_at.slice(0, 10)).toBe(new Date().toJSON().slice(0, 10));
           expect(article.comment_count).toBe(0);
         });
     });
@@ -606,9 +610,7 @@ describe("POST", () => {
         })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            'Key (topic)=(dragons) is not present in table "topics".'
-          );
+          expect(msg).toBe('Key (topic)=(dragons) is not present in table "topics".');
         });
     });
     test("404 - when author provided does not exist", () => {
@@ -622,9 +624,7 @@ describe("POST", () => {
         })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            'Key (author)=(joe man) is not present in table "users".'
-          );
+          expect(msg).toBe('Key (author)=(joe man) is not present in table "users".');
         });
     });
   });
@@ -650,9 +650,7 @@ describe("POST", () => {
         })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            "Please ensure your request body includes 'slug' and 'description'"
-          );
+          expect(msg).toBe("Please ensure your request body includes 'slug' and 'description'");
         });
     });
   });
@@ -676,9 +674,7 @@ describe("PATCH", () => {
           expect(article.body).toBe("I find this existence challenging");
           expect(article.hasOwnProperty("created_at")).toBe(true);
           expect(article.votes).toBe(50);
-          expect(article.article_img_url).toBe(
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          );
+          expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
         });
     });
     test("400 - when invalid value is given for votes input", () => {
@@ -737,9 +733,7 @@ describe("PATCH", () => {
         .then(({ body: { comment } }) => {
           expect(Object.keys(comment).length).toBe(6);
           expect(comment.comment_id).toBe(1);
-          expect(comment.body).toBe(
-            "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!"
-          );
+          expect(comment.body).toBe("Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!");
           expect(comment.votes).toBe(26);
           expect(comment.author).toBe("butter_bridge");
           expect(comment.article_id).toBe(9);

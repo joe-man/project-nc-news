@@ -44,6 +44,8 @@ exports.selectArticles = (topic, sort_by = "created_at", order = "desc", limit, 
 
   if (limit) query += ` LIMIT ${limit} OFFSET ${p}`;
 
+  console.log(query);
+
   return db.query(query, parameters);
 };
 
